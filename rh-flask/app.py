@@ -2,14 +2,23 @@
 import os
 from flask import Flask
 from extensions import db, migrate, ma, cors
-from api.empleados import empleados_bp  # Importamos el blueprint
+from api.empleados import empleados_bp
 
 def create_app():
     app = Flask(__name__)
 
-    # Configuración de la base de datos (usa variables de entorno si existen)
-    default_db = "mysql+pymysql://root:admin@db:3306/empleados_db"
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL", default_db)
+    # Detectar entorno (Docker o local)
+    is_docker = os.path.exists("/.dockerenv")
+
+    if is_docker:
+        # Si está corriendo dentro de Docker
+        db_uri = "mysql+pymysql://root:admin@db:3306/empleados_db"
+    else:
+        # Si está corriendo en tu máquina local
+        db_uri = "mysql+pymysql://root:admin@localhost:3306/empleados_db"
+
+    # Permitir sobreescribir con variable de entorno si se define
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL", db_uri)
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["JSON_SORT_KEYS"] = False
 
@@ -19,10 +28,9 @@ def create_app():
     ma.init_app(app)
     cors.init_app(app, resources={r"/api/*": {"origins": "*"}})
 
-    # Registrar blueprint de empleados
+    # Registrar blueprint
     app.register_blueprint(empleados_bp)
 
-    # Ruta raíz
     @app.route("/")
     def index():
         return {"message": "API Empleados activa. Endpoint base: /api/empleados"}, 200
@@ -32,4 +40,4 @@ def create_app():
 
 if __name__ == "__main__":
     app = create_app()
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host="0.0.0.0", port=5000)

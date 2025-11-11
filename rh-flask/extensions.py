@@ -9,4 +9,4 @@ db = SQLAlchemy()
 migrate = Migrate()
 ma = Marshmallow()
 api = Api()
-cors = CORS()  # se inicializa en create_app
+cors = CORS()
