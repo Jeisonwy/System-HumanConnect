@@ -15,8 +15,6 @@ class EmpleadoSchema(ma.SQLAlchemySchema):
     departamento = ma.auto_field(required=True, validate=validate.Length(min=1))
     sueldo = fields.Decimal(as_string=True, required=True)
     correo = ma.auto_field(required=True, validate=validate.Email())
-
-    # Contraseña solo al cargar (no se devuelve nunca)
     contrasena = fields.String(
         load_only=True,
         required=True,
@@ -25,14 +23,11 @@ class EmpleadoSchema(ma.SQLAlchemySchema):
 
     @post_load
     def make_empleado(self, data, **kwargs):
-        """
-        Crea una instancia del modelo Empleado a partir de los datos cargados.
-        Si viene una contraseña, la encripta usando el método set_password().
-        """
+        from werkzeug.security import generate_password_hash  # 👈 Import local para evitar ciclos
         contrasena = data.pop("contrasena", None)
         emp = Empleado(**data)
         if contrasena:
-            emp.set_password(contrasena)
+            emp.contrasena = generate_password_hash(contrasena)
         return emp
 
 

@@ -6,5 +6,5 @@ CREATE TABLE IF NOT EXISTS empleados (
     departamento VARCHAR(100) NOT NULL,
     sueldo DECIMAL(10,2) NOT NULL,
     correo VARCHAR(120) UNIQUE NOT NULL,
-    contrasena VARCHAR(128) NOT NULL
+    contrasena VARCHAR(250) NOT NULL
 );
