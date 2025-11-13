@@ -41,8 +41,10 @@ export default function ListadoEmpleados() {
   };
   return (
     <div className="card p-3">
-      <h5 className="mb-3">Formulario de registro</h5>
-
+      <div className="d-flex align-items-center mb-3">
+        <img width="52" height="52" src="favicon.png" alt="logo flowlytics" />
+        <h5 className="mb-3">Formulario de registro</h5>
+      </div>
       {/* Formulario integrado */}
       <UserForm onUserCreated={obtenerEmpleados} />
 
